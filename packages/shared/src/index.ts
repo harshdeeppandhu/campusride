@@ -7,4 +7,5 @@ export * from './error-codes.js';
 export * from './cost.js';
 export * from './safety-copy.js';
 export * from './tokens.js';
+export * from './state-machines.js';
 export * from './schemas/index.js';

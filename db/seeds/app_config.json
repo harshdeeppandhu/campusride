@@ -1,0 +1,18 @@
+{
+  "cost_rates": {
+    "car": 800,
+    "bike": 250,
+    "scooter": 200,
+    "auto": 500,
+    "other": 500
+  },
+  "cap_multiplier": 1.0,
+  "emission_kg_per_km_car": 0.17,
+  "outstation_threshold_m": 40000,
+  "booking_accept_window_hours": 24,
+  "ride_min_future_minutes": 30,
+  "ride_max_future_days": 60,
+  "trusted_contacts_max": 5,
+  "review_window_days": 14,
+  "autocomplete_hours_after_eta": 12
+}

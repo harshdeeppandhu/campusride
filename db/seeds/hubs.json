@@ -1,0 +1,42 @@
+[
+  {
+    "name": "College Main Gate",
+    "kind": "campus",
+    "city": "Dehradun",
+    "lat": 30.3414,
+    "lng": 78.0435,
+    "address": "Campus Main Entrance, University Road"
+  },
+  {
+    "name": "Inter-State Bus Terminal (ISBT)",
+    "kind": "hub",
+    "city": "Dehradun",
+    "lat": 30.2878,
+    "lng": 78.0076,
+    "address": "ISBT Haridwar Bypass Road, Transport Nagar"
+  },
+  {
+    "name": "Dehradun Railway Station",
+    "kind": "hub",
+    "city": "Dehradun",
+    "lat": 30.3155,
+    "lng": 78.0322,
+    "address": "Station Road, Lakkhi Bagh"
+  },
+  {
+    "name": "Jolly Grant Airport",
+    "kind": "hub",
+    "city": "Dehradun",
+    "lat": 30.1897,
+    "lng": 78.1803,
+    "address": "Airport Road, Jauligrant"
+  },
+  {
+    "name": "Clock Tower (City Center)",
+    "kind": "custom",
+    "city": "Dehradun",
+    "lat": 30.3244,
+    "lng": 78.0416,
+    "address": "Rajpur Road, Ghanta Ghar"
+  }
+]
