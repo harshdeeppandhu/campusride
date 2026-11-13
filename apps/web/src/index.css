@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased min-h-screen text-slate-800 bg-gradient-to-br from-indigo-50 via-sky-50 to-blue-100;
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* GlassUI Frosted Glass Panel */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+  }
+
+  /* GlassUI Frosted Card */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.06);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 8px 28px 0 rgba(31, 38, 135, 0.12);
+  }
+
+  /* GlassUI Button */
+  .glass-button {
+    background: rgba(59, 107, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 15px 0 rgba(59, 107, 255, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .glass-button:hover {
+    background: rgba(37, 76, 224, 0.95);
+    box-shadow: 0 6px 20px 0 rgba(59, 107, 255, 0.45);
+    transform: translateY(-1px);
+  }
+
+  /* GlassUI Pill */
+  .glass-pill {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+  }
+}

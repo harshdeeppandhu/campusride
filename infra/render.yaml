@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: campusride-api
+    runtime: docker
+    dockerfilePath: ./infra/Dockerfile.api
+    plan: standard
+    region: singapore
+    healthCheckPath: /api/v1/readyz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_NAME
+        value: CampusRide
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: OTP_HMAC_PEPPER
+        generateValue: true
+      - key: FIELD_ENC_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false

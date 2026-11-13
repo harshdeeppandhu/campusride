@@ -1,0 +1,67 @@
+{
+  "name": "@campusride/shared",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared Zod schemas, enums, constants, cost calc, brand — used by all apps",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "source": "./src/index.ts"
+    },
+    "./enums": {
+      "import": "./dist/enums.js",
+      "types": "./dist/enums.d.ts",
+      "source": "./src/enums.ts"
+    },
+    "./schemas": {
+      "import": "./dist/schemas/index.js",
+      "types": "./dist/schemas/index.d.ts",
+      "source": "./src/schemas/index.ts"
+    },
+    "./cost": {
+      "import": "./dist/cost.js",
+      "types": "./dist/cost.d.ts",
+      "source": "./src/cost.ts"
+    },
+    "./brand": {
+      "import": "./dist/brand.js",
+      "types": "./dist/brand.d.ts",
+      "source": "./src/brand.ts"
+    },
+    "./error-codes": {
+      "import": "./dist/error-codes.js",
+      "types": "./dist/error-codes.d.ts",
+      "source": "./src/error-codes.ts"
+    },
+    "./safety-copy": {
+      "import": "./dist/safety-copy.js",
+      "types": "./dist/safety-copy.d.ts",
+      "source": "./src/safety-copy.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts src/enums.ts src/schemas/index.ts src/cost.ts src/brand.ts src/error-codes.ts src/safety-copy.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "vitest": "^2.1.6",
+    "typescript": "^5.7.2"
+  },
+  "tsup": {
+    "entry": ["src/index.ts"],
+    "format": ["esm"],
+    "dts": true,
+    "clean": true,
+    "sourcemap": true
+  }
+}

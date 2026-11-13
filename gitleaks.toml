@@ -1,0 +1,21 @@
+title = "CampusRide Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist for example and mock files"
+paths = [
+  '''^\.env\.example$''',
+  '''package\.json$''',
+  '''pnpm-lock\.yaml$''',
+  '''vitest\.config\.ts$''',
+  '''routes\.test\.ts$''',
+]
+regexes = [
+  '''dev_jwt_secret_must_be_at_least_32_characters_long_for_security_1234''',
+  '''dev_otp_hmac_pepper_must_be_at_least_32_chars_long_12345678''',
+  '''0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef''',
+  '''test-secret-32-characters-minimum-xx''',
+  '''test-pepper-32-characters-minimum-xx''',
+]

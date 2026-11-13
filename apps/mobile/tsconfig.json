@@ -1,0 +1,20 @@
+{
+  "extends": "../../packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
+    "paths": {
+      "@campusride/shared": ["../../packages/shared/src/index.ts"],
+      "@campusride/api-client": ["../../packages/api-client/src/index.ts"]
+    }
+  },
+  "include": ["app", "components", "hooks", "lib"]
+}

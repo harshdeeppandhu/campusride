@@ -1,0 +1,17 @@
+{
+  "extends": "./packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": [],
+  "references": [
+    { "path": "./packages/config" },
+    { "path": "./packages/shared" },
+    { "path": "./packages/api-client" },
+    { "path": "./apps/api" },
+    { "path": "./apps/web" },
+    { "path": "./apps/mobile" }
+  ]
+}
