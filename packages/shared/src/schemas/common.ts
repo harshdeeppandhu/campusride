@@ -24,18 +24,6 @@ export const PhoneE164Schema = z
   .regex(/^\+[1-9]\d{6,14}$/, 'Phone must be in E.164 format');
 export type PhoneE164 = z.infer<typeof PhoneE164Schema>;
 
-// ─── OTP ─────────────────────────────────────────────────────────────────────
-
-export const OtpRequestSchema = z.object({
-  email: z.string().email().toLowerCase().trim(),
-});
-export type OtpRequest = z.infer<typeof OtpRequestSchema>;
-
-export const OtpVerifySchema = z.object({
-  email: z.string().email().toLowerCase().trim(),
-  code: z.string().length(6).regex(/^\d{6}$/),
-});
-export type OtpVerify = z.infer<typeof OtpVerifySchema>;
 
 // ─── Pagination ──────────────────────────────────────────────────────────────
 

@@ -7,7 +7,10 @@ import { env } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { globalRateLimiter } from './middleware/rateLimit.js';
 import { healthRouter } from './modules/health/routes.js';
+import { authRouter } from './modules/auth/routes.js';
+import { meRouter } from './modules/me/routes.js';
 
 /**
  * Creates and configures the Express application.
@@ -69,6 +72,9 @@ export function createApp(): express.Express {
     }),
   );
 
+  // ── Rate limiting ────────────────────────────────────────────────────────
+  app.use(globalRateLimiter);
+
   // ── Body parsing (100 KB JSON limit per AGENTS.md) ───────────────────────
   app.use(express.json({ limit: '100kb' }));
   app.use(express.urlencoded({ extended: false, limit: '100kb' }));
@@ -77,11 +83,19 @@ export function createApp(): express.Express {
   const apiRouter = express.Router();
 
   apiRouter.use('/', healthRouter);
+  apiRouter.use('/auth', authRouter);
+  apiRouter.use('/me', meRouter);
 
-  // Placeholder — modules will be mounted here in later milestones:
-  // apiRouter.use('/auth', authRouter);
-  // apiRouter.use('/me', meRouter);
-  // etc.
+  // OpenAPI spec endpoint
+  apiRouter.get('/openapi.json', (_req, res) => {
+    import('../scripts/openapi-gen.js')
+      .then(({ generateOpenApiSpec }) => {
+        res.status(200).json(generateOpenApiSpec());
+      })
+      .catch(() => {
+        res.status(500).json({ error: 'Failed to load OpenAPI spec' });
+      });
+  });
 
   app.use('/api/v1', apiRouter);
 
