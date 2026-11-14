@@ -4,3 +4,5 @@ export * from './auth.js';
 export * from './phone.js';
 export * from './verification.js';
 export * from './vehicle.js';
+export * from './places.js';
+export * from './rides.js';

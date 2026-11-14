@@ -14,6 +14,9 @@ import { meRouter } from './modules/me/routes.js';
 import { verificationRouter } from './modules/verification/routes.js';
 import { adminRouter } from './modules/admin/routes.js';
 import { vehiclesRouter } from './modules/vehicles/routes.js';
+import { placesRouter } from './modules/places/routes.js';
+import { ridesRouter } from './modules/rides/routes.js';
+import { searchRouter } from './modules/search/routes.js';
 
 /**
  * Creates and configures the Express application.
@@ -91,6 +94,9 @@ export function createApp(): express.Express {
   apiRouter.use('/verification', verificationRouter);
   apiRouter.use('/admin', adminRouter);
   apiRouter.use('/vehicles', vehiclesRouter);
+  apiRouter.use('/places', placesRouter);
+  apiRouter.use('/rides', ridesRouter);
+  apiRouter.use('/search', searchRouter);
 
   // OpenAPI spec endpoint
   apiRouter.get('/openapi.json', (_req, res) => {

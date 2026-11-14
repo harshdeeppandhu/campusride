@@ -695,6 +695,136 @@ export function generateOpenApiSpec() {
           responses: { '200': { description: 'Gender verification updated' } },
         },
       },
+      '/places/hubs': {
+        get: {
+          summary: 'List active transport hubs (airports, railway stations, ISBT, campus gates)',
+          responses: { '200': { description: 'List of active hubs' } },
+        },
+      },
+      '/places/autocomplete': {
+        get: {
+          summary: 'Places autocomplete suggestions',
+          parameters: [
+            { name: 'q', in: 'query', required: true, schema: { type: 'string' } },
+            { name: 'sessionToken', in: 'query', required: false, schema: { type: 'string' } },
+          ],
+          responses: { '200': { description: 'Autocomplete predictions' } },
+        },
+      },
+      '/places/{placeId}/resolve': {
+        get: {
+          summary: 'Resolve place details and coordinates',
+          parameters: [
+            { name: 'placeId', in: 'path', required: true, schema: { type: 'string' } },
+          ],
+          responses: { '200': { description: 'Resolved place details' } },
+        },
+      },
+      '/rides/estimate': {
+        post: {
+          summary: 'Pre-calculate ride distance, duration, statutory cost cap, and emissions avoided',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/RideEstimateRequest' },
+              },
+            },
+          },
+          responses: { '200': { description: 'Ride estimate details' } },
+        },
+      },
+      '/rides': {
+        post: {
+          summary: 'Publish a new ride offer (Requires Trust Tier T3 and Idempotency-Key)',
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            { name: 'Idempotency-Key', in: 'header', required: true, schema: { type: 'string' } },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateRideRequest' },
+              },
+            },
+          },
+          responses: { '201': { description: 'Ride published successfully' } },
+        },
+      },
+      '/rides/mine': {
+        get: {
+          summary: 'List rides offered by authenticated driver',
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            { name: 'status', in: 'query', required: false, schema: { type: 'string' } },
+          ],
+          responses: { '200': { description: 'List of own offered rides' } },
+        },
+      },
+      '/rides/{id}': {
+        get: {
+          summary: 'Get ride details by ID',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          ],
+          responses: { '200': { description: 'Ride details' } },
+        },
+        patch: {
+          summary: 'Edit safe fields of a scheduled ride before first booking',
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          ],
+          responses: { '200': { description: 'Ride updated' } },
+        },
+      },
+      '/rides/{id}/start': {
+        post: {
+          summary: 'Driver starts scheduled ride',
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          ],
+          responses: { '200': { description: 'Ride started' } },
+        },
+      },
+      '/rides/{id}/complete': {
+        post: {
+          summary: 'Driver completes in-progress ride',
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          ],
+          responses: { '200': { description: 'Ride completed' } },
+        },
+      },
+      '/rides/{id}/cancel': {
+        post: {
+          summary: 'Cancel ride with mandatory reason',
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+          ],
+          responses: { '200': { description: 'Ride cancelled' } },
+        },
+      },
+      '/search/rides': {
+        get: {
+          summary: 'Search rides with PostGIS proximity, women-only, campus-only, and privacy controls',
+          parameters: [
+            { name: 'originLat', in: 'query', required: true, schema: { type: 'number' } },
+            { name: 'originLng', in: 'query', required: true, schema: { type: 'number' } },
+            { name: 'destLat', in: 'query', required: false, schema: { type: 'number' } },
+            { name: 'destLng', in: 'query', required: false, schema: { type: 'number' } },
+            { name: 'destPlaceId', in: 'query', required: false, schema: { type: 'string', format: 'uuid' } },
+            { name: 'radiusM', in: 'query', required: false, schema: { type: 'integer', default: 5000 } },
+            { name: 'seats', in: 'query', required: false, schema: { type: 'integer', default: 1 } },
+            { name: 'womenOnly', in: 'query', required: false, schema: { type: 'boolean' } },
+          ],
+          responses: { '200': { description: 'Search results' } },
+        },
+      },
     },
   };
 }

@@ -91,6 +91,34 @@ describe('T-14: Authorization Matrix & Access Control Suite', () => {
       expect(res.status).toBe(403);
       expect(res.body.code).toBe('FORBIDDEN');
     });
+
+    it('allows anonymous access to /places/hubs', async () => {
+      vi.spyOn(db, 'select').mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue([]),
+        }),
+      } as unknown as ReturnType<typeof db.select>);
+
+      const res = await request(app).get('/api/v1/places/hubs');
+      expect(res.status).toBe(200);
+    });
+
+    it('rejects unauthenticated requests to /rides/mine with 401', async () => {
+      const res = await request(app).get('/api/v1/rides/mine');
+      expect(res.status).toBe(401);
+      expect(res.body.code).toBe('UNAUTHENTICATED');
+    });
+
+    it('rejects T2 user from publishing ride on POST /rides with 403 TIER_REQUIRED', async () => {
+      const t2Token = makeToken('member', 2, 'user-authz-t2');
+      const res = await request(app)
+        .post('/api/v1/rides')
+        .set('Authorization', `Bearer ${t2Token}`)
+        .set('Idempotency-Key', 'idem-matrix-1')
+        .send({});
+      expect(res.status).toBe(403);
+      expect(res.body.code).toBe('TIER_REQUIRED');
+    });
   });
 
   describe('2. Role-Based Access Control (requireRole)', () => {

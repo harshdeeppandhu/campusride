@@ -63,8 +63,10 @@ const envSchema = z.object({
   MSG91_AUTH_KEY: z.string().optional(),
 
   // ── Maps ─────────────────────────────────────────────────────────────────
-  MAPS_ADAPTER: z.enum(['google', 'fake']).default('fake'),
+  MAPS_ADAPTER: z.enum(['google', 'fake', 'console']).default('fake'),
+  MAPS_PROVIDER: z.enum(['google', 'fake', 'console']).default('fake'),
   GOOGLE_MAPS_SERVER_KEY: z.string().optional(),
+  GOOGLE_MAPS_API_KEY: z.string().optional(),
 
   // ── Push ─────────────────────────────────────────────────────────────────
   PUSH_ADAPTER: z.enum(['expo', 'console']).default('console'),
