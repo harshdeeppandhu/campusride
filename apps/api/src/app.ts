@@ -11,6 +11,9 @@ import { globalRateLimiter } from './middleware/rateLimit.js';
 import { healthRouter } from './modules/health/routes.js';
 import { authRouter } from './modules/auth/routes.js';
 import { meRouter } from './modules/me/routes.js';
+import { verificationRouter } from './modules/verification/routes.js';
+import { adminRouter } from './modules/admin/routes.js';
+import { vehiclesRouter } from './modules/vehicles/routes.js';
 
 /**
  * Creates and configures the Express application.
@@ -85,6 +88,9 @@ export function createApp(): express.Express {
   apiRouter.use('/', healthRouter);
   apiRouter.use('/auth', authRouter);
   apiRouter.use('/me', meRouter);
+  apiRouter.use('/verification', verificationRouter);
+  apiRouter.use('/admin', adminRouter);
+  apiRouter.use('/vehicles', vehiclesRouter);
 
   // OpenAPI spec endpoint
   apiRouter.get('/openapi.json', (_req, res) => {

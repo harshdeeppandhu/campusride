@@ -170,6 +170,131 @@ export function generateOpenApiSpec() {
             },
           },
         },
+        PhoneOtpRequest: {
+          type: 'object',
+          properties: {
+            phone: { type: 'string', example: '+919876543210' },
+          },
+          required: ['phone'],
+        },
+        PhoneOtpVerify: {
+          type: 'object',
+          properties: {
+            phone: { type: 'string', example: '+919876543210' },
+            code: { type: 'string', pattern: '^\\d{6}$' },
+          },
+          required: ['phone', 'code'],
+        },
+        UploadUrlRequest: {
+          type: 'object',
+          properties: {
+            kind: {
+              type: 'string',
+              enum: [
+                'college_id',
+                'govt_id',
+                'selfie',
+                'driving_licence',
+                'vehicle_rc',
+                'insurance',
+              ],
+            },
+            contentType: {
+              type: 'string',
+              enum: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
+            },
+          },
+          required: ['kind', 'contentType'],
+        },
+        UploadUrlResponse: {
+          type: 'object',
+          properties: {
+            uploadUrl: { type: 'string', format: 'uri' },
+            key: { type: 'string' },
+            expiresInSeconds: { type: 'integer' },
+          },
+          required: ['uploadUrl', 'key', 'expiresInSeconds'],
+        },
+        CreateVerificationRequest: {
+          type: 'object',
+          properties: {
+            kind: {
+              type: 'string',
+              enum: [
+                'college_id',
+                'govt_id',
+                'selfie',
+                'driving_licence',
+                'vehicle_rc',
+                'insurance',
+              ],
+            },
+            docKey: { type: 'string' },
+            docLast4: { type: 'string', pattern: '^\\d{4}$' },
+            vehicleId: { type: 'string', format: 'uuid' },
+            expiresOn: { type: 'string', format: 'date-time' },
+          },
+          required: ['kind', 'docKey'],
+        },
+        CreateVehicle: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['car', 'bike', 'scooter', 'auto', 'other'],
+            },
+            makeModel: { type: 'string' },
+            colour: { type: 'string' },
+            registrationNumber: { type: 'string' },
+            passengerCapacity: { type: 'integer', minimum: 1, maximum: 6 },
+            insuranceValidUntil: { type: 'string', format: 'date-time' },
+          },
+          required: [
+            'type',
+            'makeModel',
+            'colour',
+            'registrationNumber',
+            'passengerCapacity',
+            'insuranceValidUntil',
+          ],
+        },
+        VehicleResponse: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            ownerId: { type: 'string', format: 'uuid' },
+            type: { type: 'string' },
+            makeModel: { type: 'string' },
+            colour: { type: 'string' },
+            registrationNumber: { type: 'string' },
+            passengerCapacity: { type: 'integer' },
+            insuranceValidUntil: { type: 'string', format: 'date-time' },
+            status: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+          required: [
+            'id',
+            'ownerId',
+            'type',
+            'makeModel',
+            'colour',
+            'registrationNumber',
+            'passengerCapacity',
+            'insuranceValidUntil',
+            'status',
+            'createdAt',
+            'updatedAt',
+          ],
+        },
+        AdminVerificationDecision: {
+          type: 'object',
+          properties: {
+            decision: { type: 'string', enum: ['approved', 'rejected'] },
+            rejectReason: { type: 'string' },
+          },
+          required: ['decision'],
+        },
       },
     },
     paths: {
@@ -367,6 +492,207 @@ export function generateOpenApiSpec() {
               },
             },
           },
+        },
+      },
+      '/me/phone/request-otp': {
+        post: {
+          summary: 'Request OTP for phone verification',
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/PhoneOtpRequest' },
+              },
+            },
+          },
+          responses: {
+            '200': { description: 'OTP sent to phone' },
+          },
+        },
+      },
+      '/me/phone/verify': {
+        post: {
+          summary: 'Verify phone number with 6-digit OTP',
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/PhoneOtpVerify' },
+              },
+            },
+          },
+          responses: {
+            '200': { description: 'Phone verified successfully' },
+          },
+        },
+      },
+      '/me/photo/upload-url': {
+        post: {
+          summary: 'Get presigned upload URL for profile photo',
+          security: [{ BearerAuth: [] }],
+          responses: {
+            '200': {
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/UploadUrlResponse' },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/verification/upload-url': {
+        post: {
+          summary: 'Get presigned upload URL for verification document',
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/UploadUrlRequest' },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/UploadUrlResponse' },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/verification/requests': {
+        post: {
+          summary: 'Submit a new verification request',
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateVerificationRequest' },
+              },
+            },
+          },
+          responses: {
+            '201': { description: 'Verification request submitted' },
+          },
+        },
+      },
+      '/verification/requests/mine': {
+        get: {
+          summary: 'List own verification requests',
+          security: [{ BearerAuth: [] }],
+          responses: {
+            '200': { description: 'List of verification requests' },
+          },
+        },
+      },
+      '/vehicles': {
+        get: {
+          summary: 'List active vehicles owned by current user',
+          security: [{ BearerAuth: [] }],
+          responses: {
+            '200': {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      vehicles: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/VehicleResponse' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          summary: 'Register a new vehicle',
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateVehicle' },
+              },
+            },
+          },
+          responses: {
+            '201': {
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/VehicleResponse' },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/vehicles/{id}': {
+        get: {
+          summary: 'Get vehicle by ID',
+          security: [{ BearerAuth: [] }],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+          responses: { '200': { description: 'Vehicle details' } },
+        },
+        patch: {
+          summary: 'Update vehicle details',
+          security: [{ BearerAuth: [] }],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+          responses: { '200': { description: 'Vehicle updated' } },
+        },
+        delete: {
+          summary: 'Soft-delete vehicle',
+          security: [{ BearerAuth: [] }],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+          responses: { '200': { description: 'Vehicle deleted' } },
+        },
+      },
+      '/admin/verification-queue': {
+        get: {
+          summary: 'List pending verification requests for admin review',
+          security: [{ BearerAuth: [] }],
+          responses: { '200': { description: 'Verification queue' } },
+        },
+      },
+      '/admin/verification/{id}/doc-url': {
+        get: {
+          summary: 'Get short-lived (60s) signed URL to view verification document',
+          security: [{ BearerAuth: [] }],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+          responses: { '200': { description: 'Signed download URL' } },
+        },
+      },
+      '/admin/verification/{id}/decision': {
+        post: {
+          summary: 'Record admin review decision for verification request',
+          security: [{ BearerAuth: [] }],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/AdminVerificationDecision' },
+              },
+            },
+          },
+          responses: { '200': { description: 'Decision recorded' } },
+        },
+      },
+      '/admin/users/{id}/set-gender-verified': {
+        post: {
+          summary: 'Admin toggle for user gender verification',
+          security: [{ BearerAuth: [] }],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+          responses: { '200': { description: 'Gender verification updated' } },
         },
       },
     },

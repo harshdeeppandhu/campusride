@@ -64,6 +64,33 @@ describe('T-14: Authorization Matrix & Access Control Suite', () => {
       expect(res.status).toBe(401);
       expect(res.body.code).toBe('UNAUTHENTICATED');
     });
+
+    it('rejects unauthenticated requests to /verification/upload-url with 401', async () => {
+      const res = await request(app).post('/api/v1/verification/upload-url').send({});
+      expect(res.status).toBe(401);
+      expect(res.body.code).toBe('UNAUTHENTICATED');
+    });
+
+    it('rejects unauthenticated requests to /vehicles with 401', async () => {
+      const res = await request(app).get('/api/v1/vehicles');
+      expect(res.status).toBe(401);
+      expect(res.body.code).toBe('UNAUTHENTICATED');
+    });
+
+    it('rejects unauthenticated requests to /admin/verification-queue with 401', async () => {
+      const res = await request(app).get('/api/v1/admin/verification-queue');
+      expect(res.status).toBe(401);
+      expect(res.body.code).toBe('UNAUTHENTICATED');
+    });
+
+    it('rejects non-admin member from /admin/verification-queue with 403 FORBIDDEN', async () => {
+      const memberToken = makeToken('member', 1, 'user-authz-member');
+      const res = await request(app)
+        .get('/api/v1/admin/verification-queue')
+        .set('Authorization', `Bearer ${memberToken}`);
+      expect(res.status).toBe(403);
+      expect(res.body.code).toBe('FORBIDDEN');
+    });
   });
 
   describe('2. Role-Based Access Control (requireRole)', () => {

@@ -22,3 +22,15 @@ meRouter.post('/consents', (req, res, next) => {
 meRouter.get('/trust', (req, res, next) => {
   void meController.getTrust(req, res, next);
 });
+
+meRouter.post('/phone/request-otp', (req, res, next) => {
+  void meController.requestPhoneOtp(req, res, next);
+});
+
+meRouter.post('/phone/verify', (req, res, next) => {
+  void meController.verifyPhoneOtp(req, res, next);
+});
+
+meRouter.post('/photo/upload-url', (req, res, next) => {
+  void meController.getPhotoUploadUrl(req, res, next);
+});
