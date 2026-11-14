@@ -1,23 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
-import type { ErrorCode } from '@campusride/shared';
 import { logger } from '../lib/logger.js';
+import { AppError } from '../lib/errors.js';
 
-/**
- * Application-level error class.
- * Throw this from services; the error handler converts it to RFC 7807 problem+json.
- */
-export class AppError extends Error {
-  constructor(
-    public readonly code: ErrorCode,
-    public readonly httpStatus: number,
-    message: string,
-    public readonly details?: unknown,
-  ) {
-    super(message);
-    this.name = 'AppError';
-  }
-}
+export { AppError };
 
 /**
  * Global error handler — must be registered LAST in Express middleware chain.

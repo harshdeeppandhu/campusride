@@ -36,6 +36,13 @@ export default [
     },
   },
   {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/test/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+    },
+  },
+  {
     ignores: [
       '**/dist/**',
       '**/node_modules/**',
