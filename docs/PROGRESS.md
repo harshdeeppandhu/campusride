@@ -8,7 +8,7 @@
 | M0 Foundation & Tooling | DONE | `e1b368e` | `pnpm verify` green (lint, typecheck, 17/17 tests, build). GlassUI tokens & UI implemented. | 2026-11-13 |
 | M1 Database & Core Domain | DONE | `423ec2c` | `pnpm verify` green (lint, typecheck, 30/30 unit tests, 8/8 DB integration tests). Migrations applied, seeds loaded, immutability triggers verified. | 2026-11-13 |
 | M2 Auth, Sessions, RBAC | DONE | `75c2986` | `pnpm verify` green (lint 0 warnings, strict typecheck, 71 tests passed: 25 shared + 46 api unit/security tests, full build). OpenAPI 3.1 generated. | 2026-11-14 |
-| M3 Profiles & Verification | DONE | pending merge | `pnpm verify` green (lint 0 warnings, strict typecheck, 106 tests passed: 25 shared + 81 api tests, full build). Storage R2+Console adapter, SMS adapter, AES-256-GCM encryption, admin queue & 60s doc viewer, vehicles CRUD, retention purge job. | 2026-11-14 |
+| M3 Profiles & Verification | DONE | `f26ebe1` | `pnpm verify` green (lint 0 warnings, strict typecheck, 106 tests passed: 25 shared + 81 api tests, full build). Storage R2+Console adapter, SMS adapter, AES-256-GCM encryption, admin queue & 60s doc viewer, vehicles CRUD, retention purge job. | 2026-11-14 |
 | M4 Places, Rides, Search | NOT STARTED | — | — | — |
 | M5 Bookings & Reviews | NOT STARTED | — | — | — |
 | M6 Notifications & Jobs | NOT STARTED | — | — | — |
