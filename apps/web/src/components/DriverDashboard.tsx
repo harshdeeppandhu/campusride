@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { UserProfile, PassengerBookingRequest } from '../types/auth';
+import type { UserProfile, PassengerBookingRequest, DriverRideCard } from '../types/auth';
 
 interface DriverDashboardProps {
   currentUser: UserProfile;
   onPublishRideClick: () => void;
   onSwitchToPassengerView: () => void;
-  driverRides: any[];
+  driverRides: DriverRideCard[];
   onCancelRide: (rideId: string) => void;
 }
 

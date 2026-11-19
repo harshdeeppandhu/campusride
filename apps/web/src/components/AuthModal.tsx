@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { UserProfile, DEMO_USERS } from '../types/auth';
+import type { UserProfile } from '../types/auth';
+import { DEMO_USERS } from '../types/auth';
 
 interface AuthModalProps {
   isOpen: boolean;

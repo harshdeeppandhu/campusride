@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserProfile, DriverDetails, TravelCategory } from '../types/auth';
+import type { UserProfile, DriverDetails, TravelCategory } from '../types/auth';
 
 interface DriverRegisterModalProps {
   isOpen: boolean;

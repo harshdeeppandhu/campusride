@@ -5,7 +5,7 @@ import {
   computeCostCap,
   type VehicleType,
 } from '@campusride/shared';
-import { UserProfile, DEMO_USERS, TravelCategory } from './types/auth';
+import type { UserProfile, TravelCategory } from './types/auth';
 import { AuthModal } from './components/AuthModal';
 import { DriverRegisterModal } from './components/DriverRegisterModal';
 import { DriverDashboard } from './components/DriverDashboard';

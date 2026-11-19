@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { UserProfile } from '../types/auth';
 
 export interface PendingDriverRequest {
   id: string;

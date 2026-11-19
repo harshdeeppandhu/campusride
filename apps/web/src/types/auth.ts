@@ -48,6 +48,22 @@ export interface PassengerBookingRequest {
   pickupNote?: string;
 }
 
+export interface DriverRideCard {
+  id: string;
+  departureTime: string;
+  origin: string;
+  destination: string;
+  isWomenOnly: boolean;
+  contributionInr: number;
+  seatsLeft: number;
+  totalSeats: number;
+  vehicle: {
+    category: TravelCategory;
+    categoryLabel?: string;
+    model: string;
+  };
+}
+
 export const DEMO_USERS: UserProfile[] = [
   {
     id: 'user-kavya',
