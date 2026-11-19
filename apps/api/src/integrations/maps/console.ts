@@ -22,6 +22,65 @@ export function calculateHaversineDistanceM(from: Coordinates, to: Coordinates):
 }
 
 const KNOWN_PLACES: Record<string, PlaceDetails> = {
+  // Dehradun Campuses & Hubs
+  'kandoli-campus': {
+    placeId: 'kandoli-campus',
+    name: 'Kandoli Campus (Knowledge Acres)',
+    formattedAddress: 'Knowledge Acres, P.O. Kandoli, via Prem Nagar, Dehradun, Uttarakhand 248007',
+    location: { lat: 30.385, lng: 77.947 },
+    city: 'Dehradun',
+  },
+  'bidholi-campus': {
+    placeId: 'bidholi-campus',
+    name: 'Bidholi Campus (Energy Acres)',
+    formattedAddress: 'Energy Acres, P.O. Bidholi, via Prem Nagar, Dehradun, Uttarakhand 248007',
+    location: { lat: 30.4159, lng: 77.967 },
+    city: 'Dehradun',
+  },
+  'isbt-dehradun': {
+    placeId: 'isbt-dehradun',
+    name: 'ISBT Dehradun (Inter State Bus Terminal)',
+    formattedAddress: 'ISBT, Haridwar Bypass Road, Transport Nagar, Dehradun, Uttarakhand 248001',
+    location: { lat: 30.2874, lng: 77.9979 },
+    city: 'Dehradun',
+  },
+  'dehradun-railway-station': {
+    placeId: 'dehradun-railway-station',
+    name: 'Dehradun Railway Station (DDN)',
+    formattedAddress: 'Station Road, Lakkhi Bagh, Dehradun, Uttarakhand 248001',
+    location: { lat: 30.3155, lng: 78.0322 },
+    city: 'Dehradun',
+  },
+  'jolly-grant-airport': {
+    placeId: 'jolly-grant-airport',
+    name: 'Jolly Grant Airport Dehradun (DED)',
+    formattedAddress: 'Dehradun Airport, Rishikesh Road, Jauligrant, Dehradun, Uttarakhand 248140',
+    location: { lat: 30.1897, lng: 78.1803 },
+    city: 'Dehradun',
+  },
+  'prem-nagar': {
+    placeId: 'prem-nagar',
+    name: 'Prem Nagar (Nanda Ki Chowki Junction)',
+    formattedAddress: 'Nanda Ki Chowki, Chakrata Road, Prem Nagar, Dehradun, Uttarakhand 248007',
+    location: { lat: 30.334, lng: 77.962 },
+    city: 'Dehradun',
+  },
+  'clock-tower-dehradun': {
+    placeId: 'clock-tower-dehradun',
+    name: 'Clock Tower (Ghanta Ghar)',
+    formattedAddress: 'Ghanta Ghar, Rajpur Road, Dehradun, Uttarakhand 248001',
+    location: { lat: 30.3244, lng: 78.0416 },
+    city: 'Dehradun',
+  },
+  'jakhan-rajpur-road': {
+    placeId: 'jakhan-rajpur-road',
+    name: 'Jakhan / Pacific Mall (Rajpur Road)',
+    formattedAddress: 'Rajpur Road, Jakhan, Dehradun, Uttarakhand 248006',
+    location: { lat: 30.362, lng: 78.067 },
+    city: 'Dehradun',
+  },
+
+  // Existing test fixtures for backward compatibility
   'campus-main-gate': {
     placeId: 'campus-main-gate',
     name: 'Campus Main Gate',

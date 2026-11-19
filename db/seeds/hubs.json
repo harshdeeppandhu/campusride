@@ -1,42 +1,66 @@
 [
   {
-    "name": "College Main Gate",
+    "name": "Kandoli Campus (Knowledge Acres)",
     "kind": "campus",
     "city": "Dehradun",
-    "lat": 30.3414,
-    "lng": 78.0435,
-    "address": "Campus Main Entrance, University Road"
+    "lat": 30.385,
+    "lng": 77.947,
+    "address": "Knowledge Acres, P.O. Kandoli, via Prem Nagar, Dehradun, Uttarakhand 248007"
+  },
+  {
+    "name": "Bidholi Campus (Energy Acres)",
+    "kind": "campus",
+    "city": "Dehradun",
+    "lat": 30.4159,
+    "lng": 77.967,
+    "address": "Energy Acres, P.O. Bidholi, via Prem Nagar, Dehradun, Uttarakhand 248007"
   },
   {
     "name": "Inter-State Bus Terminal (ISBT)",
     "kind": "hub",
     "city": "Dehradun",
-    "lat": 30.2878,
-    "lng": 78.0076,
-    "address": "ISBT Haridwar Bypass Road, Transport Nagar"
+    "lat": 30.2874,
+    "lng": 77.9979,
+    "address": "ISBT Haridwar Bypass Road, Transport Nagar, Dehradun, Uttarakhand 248001"
   },
   {
-    "name": "Dehradun Railway Station",
+    "name": "Dehradun Railway Station (DDN)",
     "kind": "hub",
     "city": "Dehradun",
     "lat": 30.3155,
     "lng": 78.0322,
-    "address": "Station Road, Lakkhi Bagh"
+    "address": "Station Road, Lakkhi Bagh, Dehradun, Uttarakhand 248001"
   },
   {
-    "name": "Jolly Grant Airport",
+    "name": "Jolly Grant Airport (DED)",
     "kind": "hub",
     "city": "Dehradun",
     "lat": 30.1897,
     "lng": 78.1803,
-    "address": "Airport Road, Jauligrant"
+    "address": "Airport Road, Jauligrant, Dehradun, Uttarakhand 248140"
   },
   {
-    "name": "Clock Tower (City Center)",
+    "name": "Prem Nagar (Nanda Ki Chowki)",
+    "kind": "hub",
+    "city": "Dehradun",
+    "lat": 30.334,
+    "lng": 77.962,
+    "address": "Nanda Ki Chowki, Chakrata Road, Prem Nagar, Dehradun, Uttarakhand 248007"
+  },
+  {
+    "name": "Clock Tower (Ghanta Ghar)",
     "kind": "custom",
     "city": "Dehradun",
     "lat": 30.3244,
     "lng": 78.0416,
-    "address": "Rajpur Road, Ghanta Ghar"
+    "address": "Rajpur Road, Ghanta Ghar, Dehradun, Uttarakhand 248001"
+  },
+  {
+    "name": "Jakhan / Pacific Mall",
+    "kind": "custom",
+    "city": "Dehradun",
+    "lat": 30.362,
+    "lng": 78.067,
+    "address": "Rajpur Road, Jakhan, Dehradun, Uttarakhand 248006"
   }
 ]
