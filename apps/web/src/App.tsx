@@ -5,6 +5,11 @@ import {
   computeCostCap,
   type VehicleType,
 } from '@campusride/shared';
+import { UserProfile, DEMO_USERS, TravelCategory } from './types/auth';
+import { AuthModal } from './components/AuthModal';
+import { DriverRegisterModal } from './components/DriverRegisterModal';
+import { DriverDashboard } from './components/DriverDashboard';
+import { AdminSafetyDeskModal } from './components/AdminSafetyDeskModal';
 
 // Dehradun Campuses and Key Transit Hubs
 const DEHRADUN_CAMPUSES = [
@@ -86,7 +91,7 @@ const DEHRADUN_HUBS = [
   },
 ];
 
-export type TravelCategory = 'moto' | 'auto' | 'hatchback' | 'sedan' | 'suv';
+// TravelCategory is imported from ./types/auth
 
 export interface CategoryOption {
   id: TravelCategory;
@@ -692,6 +697,26 @@ export default function App() {
   const [womenOnlyFilter, setWomenOnlyFilter] = useState(false);
   const [viewerGender, setViewerGender] = useState<'female' | 'male'>('female');
 
+  // User Authentication & Role State
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('campusride_current_user');
+        if (saved) return JSON.parse(saved) as UserProfile;
+      } catch {
+        // Fall back
+      }
+    }
+    return null;
+  });
+
+  const [viewMode, setViewMode] = useState<'passenger' | 'driver'>('passenger');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authPromptRole, setAuthPromptRole] = useState<'passenger' | 'driver'>('passenger');
+  const [isDriverRegisterOpen, setIsDriverRegisterOpen] = useState(false);
+  const [isAdminDeskOpen, setIsAdminDeskOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
   // Modals
   const [activeModal, setActiveModal] = useState<'none' | 'offer' | 'safety' | 'booking'>('none');
   const [bookingRide, setBookingRide] = useState<RideCard | null>(null);
@@ -799,21 +824,30 @@ export default function App() {
       suv: 'SUV / XL (Uber XL style)',
     };
 
+    const driverName =
+      currentUser?.name ??
+      (viewerGender === 'female' ? 'You (Verified Female Driver)' : 'You (Verified Student Driver)');
+    const driverAvatar =
+      currentUser?.avatar ??
+      (viewerGender === 'female'
+        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+        : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80');
+    const driverCollege = currentUser?.department
+      ? `UPES ${currentUser.department} (${currentUser.campus})`
+      : offerOrigin.includes('Bidholi')
+      ? 'UPES School of Computer Science (Bidholi)'
+      : 'UPES School of Law (Kandoli)';
+
     const newRide: RideCard = {
-      id: 'ride-' + Date.now(),
+      id: 'ride-user-' + Date.now(),
       driver: {
-        name: viewerGender === 'female' ? 'You (Verified Female Driver)' : 'You (Verified Student Driver)',
-        avatar:
-          viewerGender === 'female'
-            ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
-            : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-        college: offerOrigin.includes('Bidholi')
-          ? 'UPES School of Computer Science (Bidholi)'
-          : 'UPES School of Law (Kandoli)',
+        name: driverName,
+        avatar: driverAvatar,
+        college: driverCollege,
         rating: 5.0,
-        tripsCount: 1,
-        isWomenVerified: offerIsWomenOnly || viewerGender === 'female',
-        isCollegeVerified: true,
+        tripsCount: (currentUser?.totalRidesOffered ?? 0) + 1,
+        isWomenVerified: offerIsWomenOnly || (currentUser?.gender === 'female'),
+        isCollegeVerified: currentUser?.collegeVerified ?? true,
       },
       departureTime: offerTime || '18:30',
       arrivalTime: 'Estimated ~50m later',
@@ -826,8 +860,8 @@ export default function App() {
         type: offerVehicleCategory === 'moto' ? 'bike' : offerVehicleCategory === 'auto' ? 'auto' : 'car',
         category: offerVehicleCategory,
         categoryLabel: defaultLabels[offerVehicleCategory],
-        model: offerModel.trim() || defaultModels[offerVehicleCategory],
-        color: 'White',
+        model: offerModel.trim() || currentUser?.driverDetails?.vehicleModel || defaultModels[offerVehicleCategory],
+        color: currentUser?.driverDetails?.vehicleColor || 'White',
         features: ['Air Conditioned', 'Student Fuel Share', 'Safe Verified Ride'],
       },
       contributionInr: offerPrice,
@@ -856,8 +890,51 @@ export default function App() {
     setSelectedCategory('all');
     setLastPublishedRide(newRide);
     setOfferSuccess(true);
-    setPublishedToast(`🎉 Your ride from ${newRide.origin} to ${newRide.destination} is now live at the top of the feed!`);
+    setPublishedToast(`🎉 Your ride from ${newRide.origin} to ${newRide.destination} is now live!`);
   };
+
+  const handleOfferRideClick = () => {
+    if (!currentUser) {
+      setAuthPromptRole('driver');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    if (!currentUser.driverVerified) {
+      setIsDriverRegisterOpen(true);
+      return;
+    }
+    if (currentUser.driverDetails) {
+      setOfferVehicleCategory(currentUser.driverDetails.vehicleCategory);
+      setOfferModel(currentUser.driverDetails.vehicleModel);
+      setOfferSeats(currentUser.driverDetails.seatingCapacity);
+    }
+    setActiveModal('offer');
+  };
+
+  const handleRequestSeatClick = (ride: RideCard) => {
+    if (!currentUser) {
+      setAuthPromptRole('passenger');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setBookingRide(ride);
+    setActiveModal('booking');
+  };
+
+  const handleCancelRide = (rideId: string) => {
+    const updated = rides.filter((r) => r.id !== rideId);
+    setRides(updated);
+    try {
+      localStorage.setItem('campusride_dehradun_rides', JSON.stringify(updated));
+    } catch {
+      // Ignore
+    }
+    setPublishedToast('Ride removed from your offered trips.');
+  };
+
+  const driverRides = rides.filter(
+    (r) => r.driver.name === currentUser?.name || r.id.startsWith('ride-user-')
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
@@ -883,58 +960,215 @@ export default function App() {
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-            <a href="#browse-rides" className="text-emerald-700 font-bold hover:text-emerald-800 transition">
-              Find a Ride
-            </a>
+          <div className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
+            {currentUser && (
+              <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('passenger')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                    viewMode === 'passenger'
+                      ? 'bg-white text-emerald-800 shadow-xs ring-1 ring-slate-200'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <span>🎒</span>
+                  <span>Passenger View</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!currentUser.driverVerified) {
+                      setIsDriverRegisterOpen(true);
+                    } else {
+                      setViewMode('driver');
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${
+                    viewMode === 'driver'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <span>🚗</span>
+                  <span>Driver Dashboard</span>
+                  {!currentUser.driverVerified && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] bg-amber-400 text-amber-950 font-black">
+                      Verify
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
+
             <button
               type="button"
-              onClick={() => setActiveModal('offer')}
-              className="hover:text-emerald-700 transition"
+              onClick={handleOfferRideClick}
+              className="hover:text-emerald-700 transition font-bold"
             >
               Offer a Ride
             </button>
             <button
               type="button"
               onClick={() => setActiveModal('safety')}
-              className="hover:text-emerald-700 transition flex items-center gap-1.5"
+              className="hover:text-emerald-700 transition flex items-center gap-1.5 text-xs font-semibold"
             >
               <span>🛡️</span>
               <span>Safety & Trust</span>
             </button>
+            <button
+              type="button"
+              onClick={() => setIsAdminDeskOpen(true)}
+              className="hover:text-emerald-700 transition flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700"
+            >
+              <span>🏛️</span>
+              <span>Campus Safety Desk</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            </button>
           </div>
 
-          {/* Right Action & Profile Simulation Switcher */}
+          {/* Right Action: Profile & Auth Section */}
           <div className="flex items-center gap-3">
-            {/* Persona Preview Toggle */}
-            <div className="hidden lg:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-xs text-slate-600">
-              <span className="text-[11px] font-medium text-slate-500">View as:</span>
+            {/* Quick Gender Test Switcher (when logged out) */}
+            {!currentUser && (
+              <div className="hidden lg:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-xs text-slate-600">
+                <span className="text-[11px] font-medium text-slate-500">Preview:</span>
+                <button
+                  type="button"
+                  onClick={() => setViewerGender('female')}
+                  className={`px-2 py-0.5 rounded-full font-bold transition text-[11px] ${
+                    viewerGender === 'female'
+                      ? 'bg-purple-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  👩 Female
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewerGender('male')}
+                  className={`px-2 py-0.5 rounded-full font-bold transition text-[11px] ${
+                    viewerGender === 'male' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  👨 Male
+                </button>
+              </div>
+            )}
+
+            {currentUser ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                  className="flex items-center gap-2 p-1 sm:px-3 sm:py-1.5 rounded-2xl hover:bg-slate-100 transition border border-transparent hover:border-slate-200"
+                >
+                  <div className="relative">
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-8 h-8 rounded-full object-cover ring-2 ring-emerald-500/30"
+                    />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                  </div>
+                  <div className="text-left hidden md:block">
+                    <p className="text-xs font-bold text-slate-800 leading-tight flex items-center gap-1">
+                      <span>{currentUser.name.split(' ')[0]}</span>
+                      {currentUser.trustTier === 'T2' && <span className="text-emerald-600 text-[10px]">🛡️</span>}
+                    </p>
+                    <p className="text-[10px] text-slate-500 leading-tight">
+                      {currentUser.trustTier === 'T2' ? 'Verified Driver' : 'Verified Student'}
+                    </p>
+                  </div>
+                  <span className="text-xs text-slate-400 hidden sm:inline">▾</span>
+                </button>
+
+                {/* Dropdown Menu */}
+                {isProfileMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95">
+                    <div className="px-4 py-2 border-b border-slate-100">
+                      <p className="text-xs font-black text-slate-900">{currentUser.name}</p>
+                      <p className="text-[11px] text-slate-500 truncate">{currentUser.email}</p>
+                      <div className="mt-1.5 flex items-center gap-1.5">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+                          {currentUser.trustTier}: {currentUser.trustTier === 'T2' ? 'Verified Driver' : 'Verified Student'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 capitalize">{currentUser.campus}</span>
+                      </div>
+                    </div>
+
+                    <div className="py-1 text-xs">
+                      {currentUser.driverVerified ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setViewMode(viewMode === 'driver' ? 'passenger' : 'driver');
+                            setIsProfileMenuOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-slate-700 hover:bg-slate-50 font-semibold flex items-center gap-2"
+                        >
+                          <span>{viewMode === 'driver' ? '🎒 Switch to Passenger View' : '🚗 Switch to Driver Dashboard'}</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsDriverRegisterOpen(true);
+                            setIsProfileMenuOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-emerald-700 hover:bg-emerald-50 font-bold flex items-center gap-2"
+                        >
+                          <span>🚗 Register Vehicle & Drive (Tier 2)</span>
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveModal('safety');
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-slate-700 hover:bg-slate-50 font-semibold flex items-center gap-2"
+                      >
+                        <span>🛡️ Campus Safety Guidelines</span>
+                      </button>
+                    </div>
+
+                    <div className="pt-1 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          localStorage.removeItem('campusride_current_user');
+                          setCurrentUser(null);
+                          setViewMode('passenger');
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-rose-600 hover:bg-rose-50 text-xs font-bold flex items-center gap-2"
+                      >
+                        <span>🚪 Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
               <button
                 type="button"
-                onClick={() => setViewerGender('female')}
-                className={`px-2.5 py-0.5 rounded-full font-bold transition ${
-                  viewerGender === 'female'
-                    ? 'bg-purple-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                onClick={() => {
+                  setAuthPromptRole('passenger');
+                  setIsAuthModalOpen(true);
+                }}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5"
               >
-                👩 Female Member
+                <span>🎓</span>
+                <span>Sign In</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setViewerGender('male')}
-                className={`px-2.5 py-0.5 rounded-full font-bold transition ${
-                  viewerGender === 'male' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                👨 Male Member
-              </button>
-            </div>
+            )}
 
             <button
               type="button"
-              onClick={() => setActiveModal('offer')}
-              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 transition hover:-translate-y-0.5 active:translate-y-0"
+              onClick={handleOfferRideClick}
+              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md transition hover:-translate-y-0.5 active:translate-y-0"
             >
               <span>+</span>
               <span>Publish Ride</span>
@@ -943,7 +1177,19 @@ export default function App() {
         </div>
       </nav>
 
-      {/* ── Dehradun Hero & Search Hubs ───────────────────────────────── */}
+      {viewMode === 'driver' && currentUser?.driverVerified ? (
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <DriverDashboard
+            currentUser={currentUser}
+            onPublishRideClick={handleOfferRideClick}
+            onSwitchToPassengerView={() => setViewMode('passenger')}
+            driverRides={driverRides}
+            onCancelRide={handleCancelRide}
+          />
+        </main>
+      ) : (
+        <>
+          {/* ── Dehradun Hero & Search Hubs ───────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-emerald-50/70 via-teal-50/30 to-slate-50 pt-10 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="relative max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 border border-emerald-200 shadow-xs text-xs font-bold text-emerald-800 mb-5">
@@ -1359,10 +1605,7 @@ export default function App() {
 
                   <button
                     type="button"
-                    onClick={() => {
-                      setBookingRide(ride);
-                      setActiveModal('booking');
-                    }}
+                    onClick={() => handleRequestSeatClick(ride)}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-2xl shadow-md shadow-emerald-600/20 transition hover:-translate-y-0.5 active:translate-y-0"
                   >
                     Request Seat →
@@ -1415,6 +1658,8 @@ export default function App() {
           </div>
         </div>
       </section>
+        </>
+      )}
 
       {/* ── Modal: Publish Ride Wizard ─────────────────────────────────── */}
       {activeModal === 'offer' && (
@@ -1740,6 +1985,17 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => {
+                  if (bookingRide) {
+                    const updated = rides.map((r) =>
+                      r.id === bookingRide.id ? { ...r, seatsLeft: Math.max(0, r.seatsLeft - 1) } : r
+                    );
+                    setRides(updated);
+                    try {
+                      localStorage.setItem('campusride_dehradun_rides', JSON.stringify(updated));
+                    } catch {
+                      // Ignore
+                    }
+                  }
                   setActiveModal('none');
                   setBookingSuccess(true);
                 }}
@@ -1797,6 +2053,76 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* ── Modal: Authentication & Sign In ────────────────────────────── */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialRolePrompt={authPromptRole}
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          try {
+            localStorage.setItem('campusride_current_user', JSON.stringify(user));
+          } catch {
+            // Ignore
+          }
+          setIsAuthModalOpen(false);
+          if (user.gender === 'female' || user.gender === 'male') {
+            setViewerGender(user.gender);
+          }
+          if (authPromptRole === 'driver') {
+            if (user.driverVerified) {
+              setViewMode('driver');
+              handleOfferRideClick();
+            } else {
+              setIsDriverRegisterOpen(true);
+            }
+          }
+          setPublishedToast(`Welcome, ${user.name}! You are signed in as a verified ${user.memberType}.`);
+        }}
+      />
+
+      {/* ── Modal: Driver Verification & Vehicle Registration ─────────── */}
+      {currentUser && (
+        <DriverRegisterModal
+          isOpen={isDriverRegisterOpen}
+          onClose={() => setIsDriverRegisterOpen(false)}
+          currentUser={currentUser}
+          onRegisteredSuccess={(updatedUser) => {
+            setCurrentUser(updatedUser);
+            try {
+              localStorage.setItem('campusride_current_user', JSON.stringify(updatedUser));
+            } catch {
+              // Ignore
+            }
+            setIsDriverRegisterOpen(false);
+            setViewMode('driver');
+            setPublishedToast('🎉 Driver verification approved! Welcome to CampusRide Driver Partner.');
+          }}
+        />
+      )}
+
+      {/* ── Modal: Campus Safety & Verification Desk ──────────────────── */}
+      <AdminSafetyDeskModal
+        isOpen={isAdminDeskOpen}
+        onClose={() => setIsAdminDeskOpen(false)}
+        onApproveDriver={(reqId, driverUserId) => {
+          if (currentUser && currentUser.id === driverUserId) {
+            const upgraded: UserProfile = {
+              ...currentUser,
+              trustTier: 'T2',
+              driverVerified: true,
+            };
+            setCurrentUser(upgraded);
+            try {
+              localStorage.setItem('campusride_current_user', JSON.stringify(upgraded));
+            } catch {
+              // Ignore
+            }
+          }
+          setPublishedToast('✓ Driver & Vehicle verified successfully. Granted Tier 2 status.');
+        }}
+      />
 
       {/* ── Footer ─────────────────────────────────────────────────────── */}
       <footer className="border-t border-slate-200 bg-white py-8 px-4 text-center text-xs text-slate-500">
