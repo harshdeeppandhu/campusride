@@ -59,6 +59,15 @@
 - None in M4 (utilized existing `@campusride/shared` schemas and standard dependencies).
 
 ## Next 3 actions
-1. Start local development servers (`pnpm dev`) and provide user with runnable links (`http://localhost:5173` and `http://localhost:3001`) with testing instructions.
-2. Receive human review and gate approval before starting Milestone 5 (Bookings & Reviews).
-3. Start Milestone 5: Bookings & Reviews (`docs/10 §M5`).
+1. Push committed monorepo to GitHub (`git remote add origin <url>`, `git push -u origin main`).
+2. Connect Neon PostgreSQL cloud database and run migrations (`pnpm db:migrate && pnpm db:seed`).
+3. Connect repository to Vercel for live frontend deployment.
+
+## Web Experience & Deployment Foundation (Pre-Push Audit Complete)
+- **Dehradun Localization**: Full campus hubs mapping (Bidholi Energy Acres, Kandoli Knowledge Acres, ISBT, Railway Station, Jolly Grant Airport, Prem Nagar, Clock Tower).
+- **Ola/Uber/Rapido Categories**: Added Moto (Bike), Shared Auto, Hatchback (Go), Prime Sedan, SUV/XL with live statutory fuel cap and price comparison.
+- **Unified Auth & Session Persistence**: LocalStorage persistence, 6-digit OTP verification modal with domain chips (`@stu.upes.ac.in`), and 1-click test personas.
+- **Dual-Role Experience**: Seamless switching between Passenger View and Driver Dashboard with real-time seat management.
+- **Campus Safety & Admin Desk**: Integrated zero-fee peer review queue for Driving Licenses and Vehicle RC verification (`Tier 2` promotion).
+- **Vercel Monorepo Deployment**: Added `vercel.json` and verified production build (3.76s).
+- **Quality Gate**: `pnpm verify` (ESLint 0 errors/0 warnings, 5/5 packages typecheck clean, 103/103 tests green, production build green). Clean Git working tree.
